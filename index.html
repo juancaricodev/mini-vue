@@ -11,5 +11,19 @@
       <br />
       <input type="text" p-model="message" />
     </div>
+
+    <script src="./index.js"></script>
+    <script>
+      const { createApp } = Global
+
+      const app = createApp({
+        data() {
+          return {
+            message: 'Hi Vue!'
+          }
+        }
+      })
+      app.mount();
+    </script>
   </body>
 </html>
