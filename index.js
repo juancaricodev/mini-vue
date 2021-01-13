@@ -1,12 +1,18 @@
 class Reactive {
+  // Dependencies
+  deps = new Map()
+
   constructor(options) {
     this.origin = options.data()
+
+    const self = this
 
     // Destination
     this.$data = new Proxy(this.origin, {
       get(target, name) {
         // if (name in target)
         if (Reflect.has(target, name)) {
+          self.track(target, name)
           // return target[name]
           return Reflect.get(target, name)
         }
@@ -14,10 +20,26 @@ class Reactive {
         return ''
       },
       set(target, name, value) {
-        console.log('Modifying')
         Reflect.set(target, name, value)
+        self.trigger(name)
       }
     })
+  }
+
+  track(target, name) {
+    if (!this.deps.has(name)) {
+      const effect = () => {
+        document.querySelectorAll(`*[p-text=${name}]`).forEach(el => {
+          this.pText(el, target, name)
+        })
+      }
+      this.deps.set(name, effect)
+    }
+  }
+
+  trigger(name) {
+    const effect = this.deps.get(name)
+    effect()
   }
 
   mount() {
